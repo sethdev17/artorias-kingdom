@@ -1,0 +1,13 @@
+{
+  "name": "artorias-kingdom",
+  "version": "1.0.0",
+  "description": "Site Artoria's Kingdom",
+  "type": "module",
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "nodemailer": "^6.9.4"
+  },
+  "scripts": {
+    "start": "node server.js"
+  }
+}
