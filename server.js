@@ -13,7 +13,25 @@ const PORT = process.env.PORT || 3000;
 
 const server = http.createServer(async (req, res) => {
     
-    // --- API: CONTACT FORM ---
+    // ==================================================================
+    // 1. CONFIGURARE CORS (OBLIGATORIU: Permite Cloudflare să acceseze Render)
+    // ==================================================================
+    const corsHeaders = {
+        'Access-Control-Allow-Origin': 'https://artorias-kingdom.pages.dev', 
+        'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type'
+    };
+
+    // Dacă browserul face o cerere "OPTIONS" (verificare înainte de trimitere), răspundem rapid cu OK
+    if (req.method === 'OPTIONS') {
+        res.writeHead(204, corsHeaders);
+        res.end();
+        return;
+    }
+
+    // ==================================================================
+    // 2. API: CONTACT FORM (BACKEND LOGIC)
+    // ==================================================================
     if(req.method === 'POST' && req.url === '/contact/send'){
         try{
             let body = '';
@@ -25,33 +43,34 @@ const server = http.createServer(async (req, res) => {
             // Apelăm logica (care acum face și validare)
             const result = await handleContact(data);
 
+            // IMPORTANT: Adăugăm '...corsHeaders' la fiecare răspuns JSON
             if(result.ok){
                 // SUCCES 200 OK
-                res.writeHead(200, { 'Content-Type': 'application/json' });
+                res.writeHead(200, { 'Content-Type': 'application/json', ...corsHeaders });
                 res.end(JSON.stringify({ ok: true }));
             } 
             else if(result.reason === 'limit'){
-                // LIMITĂ ATINSĂ 429 Too Many Requests
-                // Trimitem și mesajul de eroare specific
-                res.writeHead(429, { 'Content-Type': 'application/json' });
+                // LIMITĂ ATINSĂ 429
+                res.writeHead(429, { 'Content-Type': 'application/json', ...corsHeaders });
                 res.end(JSON.stringify({ ok: false, error: result.error }));
             } 
             else {
-                // EROARE VALIDARE SAU SMTP 400 Bad Request
-                // Trimitem eroarea (ex: "Mesajul este prea scurt")
-                res.writeHead(400, { 'Content-Type': 'application/json' });
+                // EROARE VALIDARE SAU SMTP 400
+                res.writeHead(400, { 'Content-Type': 'application/json', ...corsHeaders });
                 res.end(JSON.stringify({ ok: false, error: result.error || 'Server error' }));
             }
 
         } catch(err){
             console.error('Error on /contact/send', err);
-            res.writeHead(500, { 'Content-Type': 'application/json' });
+            res.writeHead(500, { 'Content-Type': 'application/json', ...corsHeaders });
             res.end(JSON.stringify({ ok: false, error: 'Internal Server Error' }));
         }
         return;
     }
 
-    // --- STATIC FILE SERVING ---
+    // ==================================================================
+    // 3. STATIC FILE SERVING (VECHIUL TĂU COD PĂSTRAT)
+    // ==================================================================
     const mimeTypes = {
         '.html': 'text/html',
         '.css': 'text/css',
@@ -71,7 +90,12 @@ const server = http.createServer(async (req, res) => {
     }
 
     const extname = String(path.extname(filePath)).toLowerCase();
-    const contentType = mimeTypes[extname] || 'application/octet-stream';
+    let contentType = mimeTypes[extname] || 'application/octet-stream';
+
+    // Adăugăm charset utf-8 pentru fișierele text ca să se vadă diacriticele bine
+    if (contentType.startsWith('text/') || contentType === 'application/json') {
+        contentType += '; charset=utf-8';
+    }
 
     fs.readFile(filePath, (error, content) => {
         if (error) {
@@ -79,10 +103,10 @@ const server = http.createServer(async (req, res) => {
                 // 404
                 fs.readFile('./404.html', (notFoundError, notFoundContent) => {
                     if (notFoundError) {
-                        res.writeHead(404, { 'Content-Type': 'text/html' });
+                        res.writeHead(404, { 'Content-Type': 'text/html; charset=utf-8' });
                         res.end('<h1>404 Not Found</h1>', 'utf-8');
                     } else {
-                        res.writeHead(404, { 'Content-Type': 'text/html' });
+                        res.writeHead(404, { 'Content-Type': 'text/html; charset=utf-8' });
                         res.end(notFoundContent, 'utf-8');
                     }
                 });
@@ -92,7 +116,8 @@ const server = http.createServer(async (req, res) => {
                 res.end('Server Error: ' + error.code);
             }
         } else {
-            // 200 OK
+            // 200 OK - Servire fișier
+            // Aici nu punem neapărat CORS headers pentru fișiere statice, dar nu strică
             res.writeHead(200, { 'Content-Type': contentType });
             res.end(content, 'utf-8');
         }
@@ -101,5 +126,4 @@ const server = http.createServer(async (req, res) => {
 
 server.listen(PORT, () => {
     console.log(`Server running at http://localhost:${PORT}/`);
-    console.log('Press Ctrl+C to stop the server.');
 });
