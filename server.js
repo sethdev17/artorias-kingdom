@@ -17,7 +17,7 @@ const server = http.createServer(async (req, res) => {
     // 1. CONFIGURARE CORS (OBLIGATORIU: Permite Cloudflare să acceseze Render)
     // ==================================================================
     const corsHeaders = {
-        'Access-Control-Allow-Origin': 'https://artorias-kingdom.pages.dev', 
+        'Access-Control-Allow-Origin': '*', 
         'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
         'Access-Control-Allow-Headers': 'Content-Type'
     };
