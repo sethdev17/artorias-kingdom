@@ -2,15 +2,6 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log('✅ contact.js loaded');
     
     // ============================================================
-    // ⚠️ CONFIGURARE SERVER (RENDER) - OBLIGATORIU DE MODIFICAT!
-    // ============================================================
-    // Copiază link-ul din Dashboard-ul Render (sub numele serviciului) și pune-l aici:
-    const SERVER_URL = 'https://artorias-kingdom.onrender.com'; 
-    
-    // NOTĂ: Dacă testezi local, poți comenta linia de sus și decomenta linia de jos:
-    // const SERVER_URL = 'http://localhost:3000'; 
-
-    // ============================================================
     // 0. CONFIGURARE ȘI SELECTORI
     // ============================================================
     const MAX_WORDS = 500;
@@ -150,8 +141,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // B. BLOCARE TOTALĂ PASTE (LIPIRE)
         textarea.addEventListener('paste', function(e) {
-            e.preventDefault(); 
-            // alert('Pentru securitate, funcția Paste este dezactivată.'); // Opțional
+            e.preventDefault(); // Oprește acțiunea
         });
 
         // C. BLOCARE TOTALĂ DROP (TRAGERE TEXT)
@@ -161,6 +151,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // D. UPDATE CONTOR
         textarea.addEventListener('input', function() {
+            // Safety net: dacă cumva intră text, îl tăiem
             let words = textarea.value.trim().split(/\s+/).filter(Boolean);
             
             if (words.length > MAX_WORDS) {
@@ -179,7 +170,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ============================================================
-    // 4. SUBMIT & SERVER COMMUNICATION (MODIFICAT PT RENDER)
+    // 4. SUBMIT & SERVER COMMUNICATION
     // ============================================================
     form.addEventListener('submit', (e) => {
         console.log('📤 Form submit event triggered');
@@ -232,8 +223,7 @@ document.addEventListener('DOMContentLoaded', () => {
             mesaj: textarea.value || '',
         };
 
-        // ⚠️ AICI FOLOSIM LINK-UL CĂTRE RENDER
-        fetch(`${SERVER_URL}/contact/send`, {
+        fetch('/contact/send', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)

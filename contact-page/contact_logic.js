@@ -34,27 +34,22 @@ async function writeStore(store) {
   }
 }
 
-// 3. SMTP - AICI ESTE FIX-UL PENTRU GMAIL PE RENDER
+// 3. SMTP
 async function createTransporter() {
+  const host = process.env.SMTP_HOST;
+  const port = process.env.SMTP_PORT;
   const user = process.env.SMTP_USER;
   const pass = process.env.SMTP_PASS;
   
-  // Dacă avem user și parolă, încercăm să trimitem
-  if (user && pass) {
-    console.log("🚀 Inițializez Nodemailer cu Service: Gmail...");
-    
-    return nodemailer.createTransport({
-        // Folosind 'service: gmail', Nodemailer setează automat portul corect (587/465)
-        // și rezolvă problemele de timeout de pe Render.
-        service: 'gmail', 
-        auth: {
-            user: user,
-            pass: pass
-        }
+  if (host && port && user && pass) {
+    return nodemailer.createTransport({ 
+        host, 
+        port: Number(port), 
+        secure: Number(port) === 465, 
+        auth: { user, pass } 
     });
   }
 
-  // Fallback Development (Ethereal) - doar dacă nu avem datele de Gmail
   if (process.env.NODE_ENV !== 'production') {
     try {
       const testAccount = await nodemailer.createTestAccount();
@@ -81,23 +76,20 @@ export async function sendContactEmail(data) {
     <p style="white-space: pre-wrap;">${(data.mesaj || '').replace(/</g, "&lt;")}</p>
   `;
 
-  try {
-    const transporter = await createTransporter();
-    
-    // Dacă nu s-a putut crea transporter-ul (lipsă date), salvăm local
-    if (!transporter) {
-        console.warn("⚠️ SMTP Credentials lipsă. Salvez în pending.");
-        const now = Date.now();
-        let pending = [];
-        try { pending = JSON.parse(await fs.readFile(PENDING_PATH, 'utf8')); } catch (e) { pending = []; }
-        pending.push({ at: now, data });
-        await fs.writeFile(PENDING_PATH, JSON.stringify(pending, null, 2), 'utf8');
-        return { ok: true, fallback: true };
-    }
+  const transporter = await createTransporter();
+  
+  if (!transporter) {
+    const now = Date.now();
+    let pending = [];
+    try { pending = JSON.parse(await fs.readFile(PENDING_PATH, 'utf8')); } catch (e) { pending = []; }
+    pending.push({ at: now, data });
+    await fs.writeFile(PENDING_PATH, JSON.stringify(pending, null, 2), 'utf8');
+    return { ok: true, fallback: true };
+  }
 
+  try {
     const fromUser = process.env.SMTP_USER || 'no-reply@artoria.ro';
-    
-    const info = await transporter.sendMail({ 
+    await transporter.sendMail({ 
         from: `Artoria's Kingdom Contact <${fromUser}>`, 
         replyTo: data.email, 
         to: toAddress, 
@@ -105,12 +97,9 @@ export async function sendContactEmail(data) {
         text, 
         html 
     });
-    
-    console.log("✅ Email trimis cu succes! ID:", info.messageId);
     return { ok: true };
-
   } catch (err) {
-    console.error('❌ SMTP Error Detaliat:', err);
+    console.error('❌ SMTP Error:', err);
     return { ok: false, error: 'Eroare server email.' };
   }
 }
@@ -118,17 +107,34 @@ export async function sendContactEmail(data) {
 // 5. HANDLER PRINCIPAL
 export async function handleContact(data) {
   
-  // --- VALIDARE ---
-  if (!data || typeof data !== 'object') return { ok: false, error: 'Date invalide.' };
-  if (!data.prenume || !data.prenume.trim()) return { ok: false, error: 'Te rugăm să introduci prenumele.' };
-  if (!data.email) return { ok: false, error: 'Adresa de email lipsește.' };
+  // --- A. VALIDARE STRICTĂ (BACKEND) ---
+  if (!data || typeof data !== 'object') {
+      return { ok: false, error: 'Date invalide.' };
+  }
+
+  // 1. Validare Prenume
+  if (!data.prenume || !data.prenume.trim()) {
+      return { ok: false, error: 'Te rugăm să introduci prenumele.' };
+  }
+
+  // 2. Validare Email (Siguranță sporită)
+  if (!data.email) {
+      return { ok: false, error: 'Adresa de email lipsește.' };
+  }
   
+  // Normalizăm emailul doar dacă există
   data.email = data.email.trim().toLowerCase();
-  if (!EMAIL_REGEX.test(data.email)) return { ok: false, error: 'Adresă de email invalidă.' };
+  
+  if (!EMAIL_REGEX.test(data.email)) {
+    return { ok: false, error: 'Adresă de email invalidă.' };
+  }
 
-  if (!data.mesaj || data.mesaj.trim().length < 5) return { ok: false, error: 'Mesajul tău este prea scurt (min 5 caractere).' };
+  // 3. Validare Mesaj
+  if (!data.mesaj || data.mesaj.trim().length < 5) {
+      return { ok: false, error: 'Mesajul tău este prea scurt (min 5 caractere).' };
+  }
 
-  // --- LIMITĂ ZILNICĂ ---
+  // --- B. VERIFICARE LIMITĂ ZILNICĂ ---
   const now = Date.now();
   const store = await readStore();
   
@@ -146,13 +152,13 @@ export async function handleContact(data) {
     };
   }
 
-  // --- TRIMITERE ---
+  // --- C. TRIMITERE ---
   const sent = await sendContactEmail(data);
   if (!sent.ok) {
       return { ok: false, error: sent.error || 'Eroare tehnică la trimitere.' };
   }
 
-  // --- UPDATE CONTOR ---
+  // --- D. UPDATE CONTOR ---
   store.count = (store.count || 0) + 1;
   await writeStore(store);
   
