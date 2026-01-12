@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://artorias-kingdom.pages.com/sitemap.xml
+Sitemap: https://artorias-kingdom.com/sitemap.xml

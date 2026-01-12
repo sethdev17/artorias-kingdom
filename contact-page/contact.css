@@ -393,20 +393,27 @@ input:focus, textarea:focus {
 footer {
   background: #0a0a0a;
   color: var(--primary);
-  padding: 30px 20px;
+  padding: var(--spacing-md);
   margin-top: auto;
+  width: 100%;
   border-top: 1px solid rgba(26, 26, 26, 0.3);
-  text-align: center;
+  z-index: 2;
 }
 
 .footer-content {
   max-width: 1200px;
   margin: 0 auto;
+  text-align: center;
+}
+
+.footer-column {
+  max-width: 600px;
+  margin: 0 auto;
 }
 
 .footer-column h4 {
   font-family: "Albert Sans", sans-serif;
-  font-size: 0.9em;
+  font-size: clamp(1em, 2vw, 1.2em);
   color: var(--text);
   margin-bottom: 15px;
   letter-spacing: 1px;
@@ -414,40 +421,89 @@ footer {
 
 .social-icons {
   list-style: none;
+  padding: 0;
+  margin: 0;
   display: flex;
   justify-content: center;
   gap: 1.5rem;
-  padding: 0;
 }
 
 .social-icon {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 45px;
-  height: 45px;
+  width: 48px;
+  height: 48px;
   border: 2px solid var(--secondary-accent);
   border-radius: 50%;
   color: var(--text);
-  transition: transform 0.3s;
+  text-decoration: none;
+  font-size: 1.5em;
+  transition: transform 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+  position: relative;
+  user-select: none;
 }
 
-.social-icon:hover { transform: scale(1.1); color: var(--secondary-accent); }
-.social-svg-icon { width: 25px; height: 25px; }
+.social-svg-icon {
+  width: 56%;
+  height: auto;
+  display: block;
+}
+
+.social-icon:hover {
+  transform: scale(1.2);
+  color: var(--secondary-accent);
+  border-color: var(--secondary-accent);
+}
+
+.social-icon[data-tooltip]::before {
+  content: attr(data-tooltip);
+  position: absolute;
+  top: -2.5rem;
+  background: var(--background);
+  color: var(--text);
+  padding: 0.4rem 0.8rem;
+  border-radius: 4px;
+  font-size: 0.7em;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+  z-index: 1000;
+}
+
+.social-icon[data-tooltip]::after {
+  content: "";
+  position: absolute;
+  top: -0.8rem;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 5px;
+  border-style: solid;
+  border-color: var(--background) transparent transparent transparent;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.social-icon:hover[data-tooltip]::before,
+.social-icon:hover[data-tooltip]::after {
+  opacity: 1;
+  visibility: visible;
+}
 
 .footer-divider {
   border: none;
   height: 1px;
-  background-color: rgba(255,255,255,0.1);
+  background-color: rgba(168, 176, 179, 0.15);
   width: 80%;
-  margin: 30px auto;
+  max-width: 1200px;
+  margin: 40px auto;
 }
 
-/* === FOOTER BOTTOM === */
 .footer-bottom {
   text-align: center;
   font-size: var(--font-size-sm);
-  color: var(--secondary);
 }
 
 .footer-bottom .rights {
