@@ -62,7 +62,7 @@ async function createTransporter() {
 
 // 4. TRIMITERE EMAIL
 export async function sendContactEmail(data) {
-  const toAddress = process.env.CONTACT_TO || 'craiulstralucitor@gmail.com';
+  const toAddress = process.env.CONTACT_TO || 'contact@artorias-kingdom.com';
   const senderName = ((data.nume || '') + ' ' + (data.prenume || '')).trim() || 'Anonim';
   const subject = `Mesaj nou de pe Artoria's Kingdom Contact: ${senderName}`;
   
