@@ -256,42 +256,4 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     });
-
-    // ============================================================
-    // 5. HAMBURGER MENU
-    // ============================================================
-    const hamburger = document.querySelector('.hamburger');
-    const navMenu = document.querySelector('.nav-menu');
-
-    if (hamburger && navMenu) {
-        hamburger.addEventListener('click', (e) => {
-            e.stopPropagation();
-            hamburger.classList.toggle('active');
-            navMenu.classList.toggle('active');
-            
-            if (hamburger.classList.contains('active')) {
-                hamburger.textContent = '✕'; 
-            } else {
-                hamburger.textContent = '☰'; 
-            }
-        });
-
-        navMenu.querySelectorAll('a').forEach(link => {
-            link.addEventListener('click', () => {
-                hamburger.classList.remove('active');
-                navMenu.classList.remove('active');
-                hamburger.textContent = '☰';
-            });
-        });
-
-        document.addEventListener('click', (e) => {
-            if (navMenu.classList.contains('active')) {
-                if (!navMenu.contains(e.target) && !hamburger.contains(e.target)) {
-                    navMenu.classList.remove('active');
-                    hamburger.classList.remove('active');
-                    hamburger.textContent = '☰';
-                }
-            }
-        });
-    }
 });

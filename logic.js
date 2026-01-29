@@ -1,7 +1,7 @@
 // Rulează imediat ce structura paginii (DOM) este gata
 document.addEventListener('DOMContentLoaded', () => {
 
-    // Setează mesajul de bun venit
+    // 1. MESAJ DE BUN VENIT (Doar dacă elementul există)
     const hour = new Date().getHours();
     const welcomeMessageElement = document.querySelector('.welcome-message');
     if (welcomeMessageElement) {
@@ -10,37 +10,42 @@ document.addEventListener('DOMContentLoaded', () => {
         else welcomeMessageElement.textContent = "Bună seara!";
     }
 
-    // Configurează meniul hamburger
+    // 2. CONFIGURARE MENIU HAMBURGER (Peste tot unde există)
     const hamburger = document.querySelector('.hamburger');
     const navMenu = document.querySelector('.nav-menu');
     if (hamburger && navMenu) {
         hamburger.addEventListener('click', (e) => {
-            // Oprește propagarea evenimentului pentru a nu declanșa listener-ul de pe document
             e.stopPropagation(); 
             navMenu.classList.toggle('active');
             hamburger.classList.toggle('active');
             hamburger.textContent = navMenu.classList.contains('active') ? '✕' : '☰';
         });
-    }
 
-    // Configurează scroll-ul lin
-    document.querySelectorAll('.nav-menu a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function(e) {
-            e.preventDefault();
-            const target = document.querySelector(this.getAttribute('href'));
-            if (target) {
-                target.scrollIntoView({ behavior: 'smooth' });
-            }
-            this.blur();
-            if (navMenu.classList.contains('active')) {
+        // Închide meniul la click pe un link
+        navMenu.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
                 navMenu.classList.remove('active');
                 hamburger.classList.remove('active');
                 hamburger.textContent = '☰';
+            });
+        });
+    }
+
+    // 3. SCROLL LIN (Doar pentru link-urile cu ancoră #)
+    document.querySelectorAll('.nav-menu a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+            const targetId = this.getAttribute('href');
+            if (targetId === "#") return;
+            
+            const target = document.querySelector(targetId);
+            if (target) {
+                e.preventDefault();
+                target.scrollIntoView({ behavior: 'smooth' });
             }
         });
     });
     
-    // --- LOGICA BUTONULUI DE TRADUCERE (CU PROTECȚIE LA SPAM) ---
+    // 4. LOGICA BUTONULUI DE TRADUCERE
     const languageSwitcher = document.querySelector('.language-switcher');
     const languageButton = document.querySelector('.language-button');
     const languageDropdown = document.querySelector('.language-dropdown');
@@ -51,9 +56,9 @@ document.addEventListener('DOMContentLoaded', () => {
         languageButton.addEventListener('click', (e) => {
             e.stopPropagation();
             if (isTranslating) return;
-            const isExpanded = languageDropdown.style.display === 'block';
-            languageDropdown.style.display = isExpanded ? 'none' : 'block';
-            languageButton.classList.toggle('expanded', !isExpanded);
+            const isVisible = languageDropdown.style.display === 'block';
+            languageDropdown.style.display = isVisible ? 'none' : 'block';
+            languageButton.classList.toggle('expanded', !isVisible);
         });
 
         languageOptions.forEach(option => {
@@ -63,15 +68,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 isTranslating = true;
                 languageSwitcher.classList.add('translating');
                 const selectedLang = option.getAttribute('data-lang');
+                
                 if (typeof Weglot !== 'undefined' && Weglot.switchTo) {
                     Weglot.switchTo(selectedLang);
-                } else {
-                    console.error("Serviciul Weglot nu este disponibil.");
                 }
-                const langText = languageButton.childNodes[1];
-                if(langText) {
-                    langText.nodeValue = ` ${selectedLang.toUpperCase()} `;
+
+                const currentLangSpan = document.getElementById('current-lang');
+                if (currentLangSpan) {
+                    currentLangSpan.textContent = selectedLang.toUpperCase();
                 }
+
                 languageDropdown.style.display = 'none';
                 languageButton.classList.remove('expanded');
                 setTimeout(() => {
@@ -81,26 +87,21 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
 
-        // Combină logica de închidere într-un singur listener pe document
+        // Închidere la click exterior (Dropdown și Hamburger)
         document.addEventListener('click', (e) => {
-            // Închide dropdown-ul de limbă dacă se dă click în afara lui
-            if (languageButton && !languageButton.contains(e.target) && languageDropdown && !languageDropdown.contains(e.target)) {
+            if (languageDropdown && !languageButton.contains(e.target)) {
                 languageDropdown.style.display = 'none';
                 languageButton.classList.remove('expanded');
             }
-
-            // NOU: Adaugă aici logica pentru închiderea meniului hamburger
-            // Verifică dacă meniul este deschis ȘI dacă click-ul NU este pe hamburger
-            if (navMenu && navMenu.classList.contains('active') && hamburger && !hamburger.contains(e.target)) {
+            if (navMenu && navMenu.classList.contains('active') && !hamburger.contains(e.target)) {
                 navMenu.classList.remove('active');
                 hamburger.classList.remove('active');
-                hamburger.textContent = '☰'; // Resetează iconița hamburgerului
+                hamburger.textContent = '☰';
             }
-            // SFÂRȘIT NOU
         });
     }
 
-    // --- LOGICA PENTRU WIDGET-UL DISCORD ---
+    // 5. WIDGET DISCORD
     const fetchDiscordStatus = async () => {
         const inviteCode = '7bkkg9a5ee';
         const apiUrl = `https://discord.com/api/v9/invites/${inviteCode}?with_counts=true`;
@@ -110,14 +111,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const response = await fetch(apiUrl);
             if (!response.ok) throw new Error('Network response was not ok');
             const data = await response.json();
-            const onlineCount = data.approximate_presence_count;
-            const totalCount = data.approximate_member_count;
-            countElement.textContent = `${onlineCount} / ${totalCount}`;
-            if (!countElement.nextElementSibling?.classList.contains('online-indicator')) {
-                const onlineIndicator = document.createElement('span');
-                onlineIndicator.classList.add('online-indicator');
-                countElement.insertAdjacentElement('afterend', onlineIndicator);
-            }
+            countElement.textContent = `${data.approximate_presence_count} / ${data.approximate_member_count}`;
         } catch (error) {
             console.error('Failed to fetch Discord status:', error);
             countElement.textContent = 'N/A';
@@ -125,32 +119,21 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     fetchDiscordStatus();
-    
-    // ADAUGĂ ACEST COD LA FINALUL FIȘIERULUI /logic.js
+});
 
-// Funcția care gestionează schimbarea fundalului la derulare pe mobil
+// 6. SCHIMBARE FUNDAL LA SCROLL (MOBIL)
 function handleScrollBackgroundChange() {
-  // Verifică dacă lățimea ecranului este pentru mobil (sub 768px)
   if (window.innerWidth < 768) {
-    // Adaugă sau elimină clasa 'scrolled' în funcție de poziția de derulare
-    // Poți ajusta valoarea '50' pentru a schimba imaginea mai devreme sau mai târziu
     if (window.scrollY > 50) {
       document.body.classList.add('scrolled');
     } else {
       document.body.classList.remove('scrolled');
     }
   } else {
-    // Pe desktop, asigură-te că clasa 'scrolled' este eliminată
     document.body.classList.remove('scrolled');
   }
 }
 
-// Atașează funcția la evenimentul de derulare
 window.addEventListener('scroll', handleScrollBackgroundChange);
-
-// Verifică și la încărcarea paginii (dacă pagina este deja derulată)
 window.addEventListener('load', handleScrollBackgroundChange);
-
-// Verifică și la redimensionarea ferestrei (dacă utilizatorul trece de la mobil la desktop)
 window.addEventListener('resize', handleScrollBackgroundChange);
-});
