@@ -2,39 +2,9 @@
 <html lang="ro">
 <head>
   <title>Artoria's Kingdom România — Contact</title>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <meta name="description" content="Dorești să ne contactezi chiar direct de pe site înainte să ni te alături pe Discord? Atunci trimite-ne un mesaj prin formularul de pe această pagină. De abia așteptăm să te cunoaștem!">
-  <meta name="keywords" content="Anime, Artoria, fate, comunitate, România, Discord, jocuri, fani anime, comunitate anime, server discord, contact, mesaj">
-  <meta property="og:title" content="Artoria's Kingdom România — Contact">
-  <meta property="og:description" content="Dorești să ne contactezi? Trimite-ne un mesaj prin formularul de pe site. De abia așteptăm să te cunoaștem!">
-  <meta property="og:image" content="/images/logo.png">
-  <meta property="og:url" content="https://artorias-kingdom.com/contact">
-  <meta name="robots" content="index,follow">
-
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-M4BQ0YD63L"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-M4BQ0YD63L');
-  </script>
-
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Albert+Sans:wght@900&display=swap" rel="stylesheet">
-  <link rel="icon" type="image/x-icon" href="/images/logo.png">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
-  
-  <link rel="stylesheet" href="/main.css">
+  <%- include('partials/head') %>
+  <!-- Stilul specific doar pentru formular -->
   <link rel="stylesheet" href="/contact-page/contact.css">
-  
-  <script type="text/javascript" src="https://cdn.weglot.com/weglot.min.js"></script>
-  <script>
-    Weglot.initialize({
-        api_key: 'wg_1e85a66adff33c39e9e38c8b2b1caa413'
-    });
-  </script>
   <script src="/logic.js" defer></script>
   <script src="/contact-page/contact.js" defer></script>
 </head>
@@ -44,7 +14,6 @@
 
     <main class="contact-main">
         <section class="contact-form-section">
-            <!-- Mesajul de introducere acum în interiorul box-ului -->
             <div class="contact-intro">
                 <h1>Completează formularul de mai jos și trimite-ne un mesaj.</h1>
                 <p>Introduce-ți datele aferente mai jos și contactează-ne dacă ai vreo curiozitate, o problemă, dorești să afli mai multe despre noi sau vrei doar să ne trimiți un mesaj.</p>
@@ -57,17 +26,17 @@
                         <label for="nume">Nume</label>
                     </div>
 
-                    <div class="input-wrap">
+                    <div class="input-wrap required">
                         <input type="text" id="prenume" name="prenume" placeholder="" required autocomplete="given-name">
                         <label for="prenume">Prenume</label>
                     </div>
 
-                    <div class="input-wrap">
+                    <div class="input-wrap required">
                         <input type="email" id="email" name="email" placeholder="" required autocomplete="email">
                         <label for="email">Email-ul tău</label>
                     </div>
 
-                    <div class="textarea-wrap">
+                    <div class="textarea-wrap required">
                         <label for="mesaj" class="textarea-label">Mesajul tău</label>
                         <textarea id="mesaj" name="mesaj" rows="8" placeholder="" required></textarea>
                         <div id="word-count" class="word-count">500</div>

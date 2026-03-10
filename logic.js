@@ -13,17 +13,22 @@ document.addEventListener('DOMContentLoaded', () => {
     // 2. CONFIGURARE MENIU HAMBURGER (Peste tot unde există)
     const hamburger = document.querySelector('.hamburger');
     const navMenu = document.querySelector('.nav-menu');
+    
     if (hamburger && navMenu) {
+        console.log("🍔 Hamburger elements found");
         hamburger.addEventListener('click', (e) => {
+            console.log("🍔 Hamburger clicked");
             e.stopPropagation(); 
-            navMenu.classList.toggle('active');
-            hamburger.classList.toggle('active');
-            hamburger.textContent = navMenu.classList.contains('active') ? '✕' : '☰';
+            const isActive = navMenu.classList.toggle('active');
+            hamburger.classList.toggle('active', isActive);
+            hamburger.textContent = isActive ? '✕' : '☰';
+            console.log("🍔 Menu status active:", isActive);
         });
 
         // Închide meniul la click pe un link
         navMenu.querySelectorAll('a').forEach(link => {
             link.addEventListener('click', () => {
+                console.log("🍔 Link clicked, closing menu");
                 navMenu.classList.remove('active');
                 hamburger.classList.remove('active');
                 hamburger.textContent = '☰';
@@ -86,20 +91,23 @@ document.addEventListener('DOMContentLoaded', () => {
                 }, 2000);
             });
         });
-
-        // Închidere la click exterior (Dropdown și Hamburger)
-        document.addEventListener('click', (e) => {
-            if (languageDropdown && !languageButton.contains(e.target)) {
-                languageDropdown.style.display = 'none';
-                languageButton.classList.remove('expanded');
-            }
-            if (navMenu && navMenu.classList.contains('active') && !hamburger.contains(e.target)) {
-                navMenu.classList.remove('active');
-                hamburger.classList.remove('active');
-                hamburger.textContent = '☰';
-            }
-        });
     }
+
+    // Listener global pentru închidere (Dropdown și Hamburger) - MUTAT ÎN AFARĂ PENTRU SIGURANȚĂ
+    document.addEventListener('click', (e) => {
+        // Închidere Dropdown Limbă
+        if (languageDropdown && languageButton && !languageButton.contains(e.target)) {
+            languageDropdown.style.display = 'none';
+            languageButton.classList.remove('expanded');
+        }
+        
+        // Închidere Hamburger
+        if (navMenu && navMenu.classList.contains('active') && hamburger && !hamburger.contains(e.target) && !navMenu.contains(e.target)) {
+            navMenu.classList.remove('active');
+            hamburger.classList.remove('active');
+            hamburger.textContent = '☰';
+        }
+    });
 
     // 5. WIDGET DISCORD
     const fetchDiscordStatus = async () => {
