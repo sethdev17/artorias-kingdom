@@ -1,7 +1,6 @@
 import fs from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import nodemailer from 'nodemailer';
 
 // Regex Strict Backend
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
@@ -11,7 +10,6 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const STORE_PATH = path.join(__dirname, 'contact_store.json');
-const PENDING_PATH = path.join(__dirname, 'pending_emails.json');
 
 const DAILY_LIMIT = Number(process.env.CONTACT_DAILY_LIMIT || 20);
 const MS_DAY = 24 * 60 * 60 * 1000;
@@ -34,77 +32,43 @@ async function writeStore(store) {
   }
 }
 
-// 3. SMTP
-async function createTransporter() {
-  const host = process.env.SMTP_HOST;
-  const port = process.env.SMTP_PORT;
-  const user = process.env.SMTP_USER;
-  const pass = process.env.SMTP_PASS;
-  
-  if (host && port && user && pass) {
-    return nodemailer.createTransport({ 
-        host, 
-        port: Number(port), 
-        secure: Number(port) === 465, 
-        auth: { user, pass } 
-    });
-  }
-
-  if (process.env.NODE_ENV !== 'production') {
-    try {
-      const testAccount = await nodemailer.createTestAccount();
-      console.log('📧 Ethereal Test Account:', testAccount.user);
-      return nodemailer.createTransport({ host: 'smtp.ethereal.email', port: 587, auth: { user: testAccount.user, pass: testAccount.pass } });
-    } catch (e) { console.warn('Ethereal unavailable'); }
-  }
-  return null;
-}
-
-// 4. TRIMITERE EMAIL
+// 3. TRIMITERE EMAIL prin Resend
 export async function sendContactEmail(data) {
   const toAddress = process.env.CONTACT_TO || 'contact@artorias-kingdom.com';
   const senderName = ((data.nume || '') + ' ' + (data.prenume || '')).trim() || 'Anonim';
-  const subject = `Mesaj nou de pe Artoria's Kingdom Contact: ${senderName}`;
-  
-  const text = `De la: ${senderName} <${data.email}>\n\nMesaj:\n${data.mesaj}`;
-  const html = `
-    <h3>Mesaj nou - Artoria's Kingdom România</h3>
-    <p><strong>Nume:</strong> ${data.nume || '-'} ${data.prenume || '-'}</p>
-    <p><strong>Email:</strong> ${data.email}</p>
-    <hr>
-    <p><strong>Mesaj:</strong></p>
-    <p style="white-space: pre-wrap;">${(data.mesaj || '').replace(/</g, "&lt;")}</p>
-  `;
 
-  const transporter = await createTransporter();
-  
-  if (!transporter) {
-    const now = Date.now();
-    let pending = [];
-    try { pending = JSON.parse(await fs.readFile(PENDING_PATH, 'utf8')); } catch (e) { pending = []; }
-    pending.push({ at: now, data });
-    await fs.writeFile(PENDING_PATH, JSON.stringify(pending, null, 2), 'utf8');
-    return { ok: true, fallback: true };
-  }
+  const res = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${process.env.RESEND_API_KEY}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      from: "Artoria's Kingdom <noreply@artorias-kingdom.com>",
+      to: toAddress,
+      reply_to: data.email,
+      subject: `Mesaj nou de pe Artoria's Kingdom: ${senderName}`,
+      html: `
+        <h3>Mesaj nou - Artoria's Kingdom România</h3>
+        <p><strong>Nume:</strong> ${data.nume || '-'} ${data.prenume || '-'}</p>
+        <p><strong>Email:</strong> ${data.email}</p>
+        <hr>
+        <p><strong>Mesaj:</strong></p>
+        <p style="white-space: pre-wrap;">${(data.mesaj || '').replace(/</g, "&lt;")}</p>
+      `
+    })
+  });
 
-  try {
-    const fromUser = process.env.SMTP_USER || 'no-reply@artoria.ro';
-    await transporter.sendMail({ 
-        from: `Artoria's Kingdom Contact <${fromUser}>`, 
-        replyTo: data.email, 
-        to: toAddress, 
-        subject, 
-        text, 
-        html 
-    });
-    return { ok: true };
-  } catch (err) {
-    console.error('❌ SMTP Error:', err);
+  if (!res.ok) {
+    const err = await res.json();
+    console.error('❌ Resend Error:', err);
     return { ok: false, error: 'Eroare server email.' };
   }
+
+  return { ok: true };
 }
 
-// 5. HANDLER PRINCIPAL
+// 4. HANDLER PRINCIPAL
 export async function handleContact(data) {
   
   // --- A. VALIDARE STRICTĂ (BACKEND) ---
@@ -117,12 +81,11 @@ export async function handleContact(data) {
       return { ok: false, error: 'Te rugăm să introduci prenumele.' };
   }
 
-  // 2. Validare Email (Siguranță sporită)
+  // 2. Validare Email
   if (!data.email) {
       return { ok: false, error: 'Adresa de email lipsește.' };
   }
   
-  // Normalizăm emailul doar dacă există
   data.email = data.email.trim().toLowerCase();
   
   if (!EMAIL_REGEX.test(data.email)) {
