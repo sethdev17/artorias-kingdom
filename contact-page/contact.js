@@ -244,10 +244,14 @@ document.addEventListener("DOMContentLoaded", () => {
       mesaj: textarea.value || "",
     };
 
-    fetch("https://artorias-kingdom.onrender.com/contact/send", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
+    const API_URL = window.location.hostname === 'localhost'
+  ? '/contact/send'
+  : 'https://artorias-kingdom.onrender.com/contact/send';
+
+    fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
     })
       .then(async (res) => {
         const data = await res.json();
