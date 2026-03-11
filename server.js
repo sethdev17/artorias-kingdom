@@ -11,7 +11,11 @@ const __dirname = path.dirname(__filename);
 const PORT = process.env.PORT || 3000;
 const app = express();
 
-app.use(cors({ origin: "https://artorias-kingdom.com" }));
+app.use(
+  cors({
+    origin: ["*"],
+  }),
+);
 
 // Configurare EJS
 app.set("view engine", "ejs");
