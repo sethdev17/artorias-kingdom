@@ -27,19 +27,13 @@ app.use(express.urlencoded({ extended: true }));
 // Servire fișiere statice (CSS, JS, Imagini)
 app.use(express.static(__dirname));
 
-app.use((req, res, next) => {
-  const path = req.path.replace(/^\/|\/$/g, '').toLowerCase();
-  res.locals.currentPage = req.path === '' ? 'home' : path;
-  next();
-});
-
 // --- RUTE PAGINI (EJS) ---
 app.get("/", (req, res) => {
-  res.render("index");
+  res.render("index", { currentPage: 'home' });
 });
 
 app.get("/contact", (req, res) => {
-  res.render("contact");
+  res.render("contact", { currentPage: 'contact' });
 });
 
 // --- API: CONTACT FORM ---
@@ -65,7 +59,7 @@ app.post("/contact/send", async (req, res) => {
 
 // Handle 404
 app.use((req, res) => {
-  res.status(404).render("index"); // Sau poți crea un 404.ejs
+  res.status(404).render("index", { currentPage: "404" }); // Sau poți crea un 404.ejs
 });
 
 app.listen(PORT, () => {
