@@ -27,6 +27,11 @@ app.use(express.urlencoded({ extended: true }));
 // Servire fișiere statice (CSS, JS, Imagini)
 app.use(express.static(__dirname));
 
+app.use((req, res, next) => {
+  res.locals.currentPage = req.path === '/' ? 'home' : req.path.replace('/', '');
+  next();
+});
+
 // --- RUTE PAGINI (EJS) ---
 app.get("/", (req, res) => {
   res.render("index");

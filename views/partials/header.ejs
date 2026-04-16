@@ -13,7 +13,10 @@
 
   <nav class="nav-menu" role="nav" aria-label="Meniu principal">
     <a href="/" role="tab">Acasă</a>
+
+    <% if  (locals.currentPage && currentPage !== 'contact') { %>
     <a href="/contact" role="tab">Contact</a>
+    <% } %>
     <div class="nav-actions-container">
       <div class="language-switcher">
         <button class="language-button" aria-label="Schimbă limba" aria-expanded="false">
