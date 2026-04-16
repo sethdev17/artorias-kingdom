@@ -28,7 +28,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(__dirname));
 
 app.use((req, res, next) => {
-  res.locals.currentPage = req.path === '/' ? 'home' : req.path.replace('/', '');
+  const path = req.path.replace(/^\/|\/$/g, '').toLowerCase();
+  res.locals.currentPage = req.path === '' ? 'home' : path;
   next();
 });
 
