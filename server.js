@@ -29,11 +29,11 @@ app.use(express.static(__dirname));
 
 // --- RUTE PAGINI (EJS) ---
 app.get("/", (req, res) => {
-  res.render("index", { currentPage: 'home' });
+  res.render("index");
 });
 
 app.get("/contact", (req, res) => {
-  res.render("contact", { currentPage: 'contact' });
+  res.render("contact");
 });
 
 // --- API: CONTACT FORM ---
