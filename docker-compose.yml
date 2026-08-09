@@ -1,0 +1,17 @@
+version: "3.8"
+
+services:
+  web:
+    build: .
+    container_name: artorias-kingdom
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - RESEND_API_KEY=${RESEND_API_KEY}
+      - CONTACT_TO=${CONTACT_TO:-contact@artorias-kingdom.com}
+      - CONTACT_DAILY_LIMIT=${CONTACT_DAILY_LIMIT:-20}
+    volumes:
+      - ./contact-page/contact_store.json:/app/contact-page/contact_store.json
