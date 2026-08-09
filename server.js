@@ -59,7 +59,7 @@ app.post("/contact/send", async (req, res) => {
 
 // Handle 404
 app.use((req, res) => {
-  res.status(404).render("index"); // Sau poți crea un 404.ejs
+  res.status(404).render("index", { currentPage: "404" }); // Sau poți crea un 404.ejs
 });
 
 app.listen(PORT, () => {
