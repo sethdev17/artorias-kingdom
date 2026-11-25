@@ -18,6 +18,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const inputs = Array.from(form.querySelectorAll(".input-wrap input"));
   const resetBtn = document.getElementById("reset-btn");
   const formMessage = document.getElementById("form-message");
+  const consent = document.getElementById("consent");
+  const consentWrap = document.getElementById("consent-wrap");
+  const consentError = document.getElementById("consent-error");
 
   // Inițializare contor
   if (wordCountEl) wordCountEl.textContent = MAX_WORDS;
@@ -65,6 +68,16 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  function showConsentError() {
+    if (consentWrap) consentWrap.classList.add("error");
+    if (consentError) consentError.hidden = false;
+  }
+
+  function clearConsentError() {
+    if (consentWrap) consentWrap.classList.remove("error");
+    if (consentError) consentError.hidden = true;
+  }
+
   function resetFormUI() {
     [...inputs, textarea].forEach((el) => {
       if (!el) return;
@@ -77,6 +90,9 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       handleLabels(el);
     });
+    if (consent) consent.checked = false;
+    clearConsentError();
+
     if (wordCountEl) {
       wordCountEl.textContent = MAX_WORDS;
       wordCountEl.classList.remove("zero");
@@ -113,6 +129,12 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
   markRequiredFields();
+
+  if (consent) {
+    consent.addEventListener("change", () => {
+      if (consent.checked) clearConsentError();
+    });
+  }
 
   if (resetBtn) {
     resetBtn.addEventListener("click", () => {
@@ -157,17 +179,9 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
 
-    // B. BLOCARE TOTALĂ PASTE (LIPIRE)
-    textarea.addEventListener("paste", function (e) {
-      e.preventDefault(); // Oprește acțiunea
-    });
-
-    // C. BLOCARE TOTALĂ DROP (TRAGERE TEXT)
-    textarea.addEventListener("drop", function (e) {
-      e.preventDefault();
-    });
-
-    // D. UPDATE CONTOR
+    // B. UPDATE CONTOR
+    // (lipirea și tragerea textului sunt permise; limita de 500 de cuvinte
+    //  rămâne singura restricție)
     textarea.addEventListener("input", function () {
       // Safety net: dacă cumva intră text, îl tăiem
       let words = textarea.value.trim().split(/\s+/).filter(Boolean);
@@ -198,11 +212,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     let valid = true;
 
-    // Validare Prenume
-    const prenume = document.getElementById("prenume");
-    if (prenume && !prenume.value.trim()) {
+    // Validare Nume sau poreclă
+    const nume = document.getElementById("nume");
+    if (nume && !nume.value.trim()) {
       valid = false;
-      showFieldError(prenume, "Te rog introduce un prenume pentru a continua.");
+      showFieldError(nume, "Te rog introduce un nume sau o poreclă.");
     }
 
     // Validare Email
@@ -227,6 +241,12 @@ document.addEventListener("DOMContentLoaded", () => {
       );
     }
 
+    // Validare Consimțământ
+    if (consent && !consent.checked) {
+      valid = false;
+      showConsentError();
+    }
+
     if (!valid) {
       console.log("❌ Validation failed on client.");
       return;
@@ -238,10 +258,10 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     const payload = {
-      nume: document.getElementById("nume")?.value || "",
-      prenume: document.getElementById("prenume")?.value || "",
-      email: document.getElementById("email")?.value || "",
-      mesaj: textarea.value || "",
+      nume: document.getElementById("nume")?.value.trim() || "",
+      email: document.getElementById("email")?.value.trim() || "",
+      mesaj: textarea.value.trim() || "",
+      consent: consent ? consent.checked === true : false,
     };
 
     const API_URL = window.location.hostname === 'localhost'

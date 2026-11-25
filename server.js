@@ -24,8 +24,39 @@ app.set("views", path.join(__dirname, "views"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Servire fișiere statice (CSS, JS, Imagini)
-app.use(express.static(__dirname));
+// Weglot poate pune prefix de limbă în URL (/en/...). Îl eliminăm înainte
+// de rutare, ca aceeași pagină EJS să fie servită și pentru traducere.
+app.use((req, res, next) => {
+  const match = req.url.match(/^\/(en|ro)(\/|$|\?)/);
+  if (match) {
+    let stripped = req.url.replace(/^\/(en|ro)/, "");
+    if (!stripped || stripped.startsWith("?")) stripped = "/" + stripped;
+    req.url = stripped;
+  }
+  next();
+});
+
+// --- FIȘIERE PUBLICE (doar ce are nevoie browserul) ---
+// Nu mai servim tot directorul proiectului: server.js, package.json,
+// contact_store.json și contact_logic.js nu trebuie să fie accesibile public.
+app.use("/images", express.static(path.join(__dirname, "images")));
+app.get(
+  [
+    "/main.css",
+    "/logic.js",
+    "/consent.js",
+    "/site-notice.js",
+    "/terms-toc.js",
+    "/robots.txt",
+    "/sitemap.xml",
+    "/contact-page/contact.css",
+    "/contact-page/contact.js",
+    "/terms-page/terms.css",
+  ],
+  (req, res) => {
+    res.sendFile(path.join(__dirname, req.path.slice(1)));
+  },
+);
 
 // --- RUTE PAGINI (EJS) ---
 app.get("/", (req, res) => {
@@ -34,6 +65,10 @@ app.get("/", (req, res) => {
 
 app.get("/contact", (req, res) => {
   res.render("contact");
+});
+
+app.get("/termeni", (req, res) => {
+  res.render("termeni");
 });
 
 // --- API: CONTACT FORM ---

@@ -15,20 +15,28 @@
     <main class="contact-main">
         <section class="contact-form-section">
             <div class="contact-intro">
-                <h1>Completează formularul de mai jos și trimite-ne un mesaj.</h1>
-                <p>Introduce-ți datele aferente mai jos și contactează-ne dacă ai vreo curiozitate, o problemă, dorești să afli mai multe despre noi sau vrei doar să ne trimiți un mesaj.</p>
+                <h1>Salut! Hai să vorbim 👋</h1>
+                <p>Dacă ai o întrebare despre comunitate, vrei să raportezi o problemă, ai o idee pentru server sau pur și simplu vrei să ne scrii, ne poți contacta aici.</p>
+                <p class="contact-intro__trust">Îți cerem doar numele (sau o poreclă), un email și mesajul. Le folosim doar ca să-ți răspundem — nu le punem într-o bază de date și nu le trimitem mai departe. <a href="/termeni#confidentialitate" target="_blank" rel="noopener noreferrer">Cum procedăm cu datele</a>.</p>
+                <p class="discord-hint">Preferi Discord? <a href="https://discord.com/users/602431963688730624" target="_blank" rel="noopener noreferrer">Scrie-ne acolo →</a></p>
+            </div>
+
+            <div class="contact-help">
+                <p class="contact-help__title">Putem ajuta cu:</p>
+                <ul>
+                    <li>întrebări despre server și reguli;</li>
+                    <li>raportarea unui membru, mesaj sau conținut nepotrivit;</li>
+                    <li>probleme legate de site sau linkuri;</li>
+                    <li>propuneri de parteneriate, evenimente sau colaborări;</li>
+                    <li>feedback și idei pentru comunitate.</li>
+                </ul>
             </div>
 
             <form id="contact-form" novalidate>
                 <div class="field-group">
-                    <div class="input-wrap">
-                        <input type="text" id="nume" name="nume" placeholder="" autocomplete="name">
-                        <label for="nume">Nume</label>
-                    </div>
-
                     <div class="input-wrap required">
-                        <input type="text" id="prenume" name="prenume" placeholder="" required autocomplete="given-name">
-                        <label for="prenume">Prenume</label>
+                        <input type="text" id="nume" name="nume" placeholder="" required autocomplete="nickname">
+                        <label for="nume">Nume sau poreclă</label>
                     </div>
 
                     <div class="input-wrap required">
@@ -43,6 +51,16 @@
                     </div>
                 </div>
 
+                <div class="consent-wrap" id="consent-wrap">
+                    <label class="consent-label" for="consent">
+                        <input type="checkbox" id="consent" name="consent" required>
+                        <span>Sunt de acord ca datele trimise să fie folosite doar pentru a răspunde mesajului meu. <a href="/termeni#confidentialitate" target="_blank" rel="noopener noreferrer">Detalii aici</a>.</span>
+                    </label>
+                    <div class="field-error consent-error" id="consent-error" hidden>Te rog să bifezi casuța ca să putem trimite mesajul.</div>
+                </div>
+
+                <p class="contact-reply-time">Încercăm să răspundem cât de repede putem, de obicei în câteva zile. Pentru urgențe legate de siguranță sau moderare, scrie „URGENT” la începutul mesajului. Nu trimite parole, date de card sau documente personale — nu îți cerem așa ceva.</p>
+
                 <div class="form-actions">
                     <button type="button" id="reset-btn" class="btn btn-grey">Refă</button>
                     <button type="submit" id="submit-btn" class="btn btn-blue">Trimite!</button>
@@ -53,6 +71,8 @@
     </main>
 
     <%- include('partials/footer') %>
+    <%- include('partials/consent') %>
+    <%- include('partials/site-notice') %>
 
     <script>
       window.addEventListener('load', () => {

@@ -1,28 +1,26 @@
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" type="image/x-icon" href="/images/logo.png">
+
+
 
 <!-- Fonturi și Iconițe -->
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Albert+Sans:wght@900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 
-<!-- Google Tag Manager -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-M4BQ0YD63L"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-M4BQ0YD63L');
-</script>
-
-<!-- Weglot -->
+<!-- Weglot: traducerea e o funcționalitate a site-ului, deci se încarcă
+     întotdeauna, devreme, ca să poată traduce conținutul la prima afișare. -->
 <script type="text/javascript" src="https://cdn.weglot.com/weglot.min.js"></script>
 <script>
-  Weglot.initialize({
-      api_key: 'wg_1e85a66adff33c39e9e38c8b2b1caa413'
-  });
+  if (typeof Weglot !== "undefined" && Weglot.initialize) {
+    Weglot.initialize({ api_key: 'wg_cd6d17f8c95591b6af57f63dda074e433' });
+  }
 </script>
 
-<!-- CSS Global (main.css este baza pentru ambele pagini) -->
+<!-- Google Analytics se încarcă DOAR după consimțământ (vezi /consent.js). -->
+<script src="/consent.js" defer></script>
+<script src="/site-notice.js?v=2026-11-25-6" defer></script>
+
+<!-- CSS Global (main.css este baza pentru toate paginile) -->
 <link rel="stylesheet" href="/main.css">

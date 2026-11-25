@@ -7,7 +7,7 @@ const OUT = "./dist";
 if (!fs.existsSync(OUT)) fs.mkdirSync(OUT, { recursive: true });
 
 // Compilează paginile EJS
-const pages = ["index", "contact"];
+const pages = ["index", "contact", "termeni"];
 for (const page of pages) {
   const html = await ejs.renderFile(`./views/${page}.ejs`, {});
   fs.writeFileSync(`${OUT}/${page}.html`, html);
@@ -32,11 +32,18 @@ function copyDir(src, dest) {
 copyDir("./images", `${OUT}/images`);
 console.log("✅ images/ copiat");
 
-copyDir("./contact-page", `${OUT}/contact-page`);
-console.log("✅ contact-page/ copiat");
+// Doar fișierele publice: NU copiem contact_logic.js sau contact_store.json
+fs.mkdirSync(`${OUT}/contact-page`, { recursive: true });
+for (const file of ["contact.css", "contact.js"]) {
+  fs.copyFileSync(`./contact-page/${file}`, `${OUT}/contact-page/${file}`);
+}
+console.log("✅ contact-page/ fișiere publice copiate");
+
+copyDir("./terms-page", `${OUT}/terms-page`);
+console.log("✅ terms-page/ copiat");
 
 // Copiază fișiere din root
-const rootFiles = ["logic.js", "main.css", "robots.txt", "sitemap.xml"];
+const rootFiles = ["logic.js", "consent.js", "site-notice.js", "terms-toc.js", "main.css", "robots.txt", "sitemap.xml"];
 for (const file of rootFiles) {
   if (fs.existsSync(file)) {
     fs.copyFileSync(file, `${OUT}/${file}`);
