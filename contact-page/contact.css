@@ -239,6 +239,12 @@ input:focus, textarea:focus {
 .btn-blue { background: #007bb3; color: white; }
 .btn-grey { background: #333; color: #ccc; }
 .btn:hover { opacity: 0.9; transform: translateY(-2px); }
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+}
+.btn:disabled:hover { opacity: 0.45; transform: none; }
 
 .form-message { margin-top: 15px; font-weight: 600; text-align: center; min-height: 24px; }
 
