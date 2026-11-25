@@ -21,6 +21,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const consent = document.getElementById("consent");
   const consentWrap = document.getElementById("consent-wrap");
   const consentError = document.getElementById("consent-error");
+  const submitBtn = document.getElementById("submit-btn");
 
   // Inițializare contor
   if (wordCountEl) wordCountEl.textContent = MAX_WORDS;
@@ -78,6 +79,13 @@ document.addEventListener("DOMContentLoaded", () => {
     if (consentError) consentError.hidden = true;
   }
 
+  // Butonul de trimite rămâne inactiv până când utilizatorul
+  // bifează consimțământul (required).
+  function updateSubmitState() {
+    if (!submitBtn) return;
+    submitBtn.disabled = !consent || !consent.checked;
+  }
+
   function resetFormUI() {
     [...inputs, textarea].forEach((el) => {
       if (!el) return;
@@ -92,6 +100,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     if (consent) consent.checked = false;
     clearConsentError();
+    updateSubmitState();
 
     if (wordCountEl) {
       wordCountEl.textContent = MAX_WORDS;
@@ -133,7 +142,9 @@ document.addEventListener("DOMContentLoaded", () => {
   if (consent) {
     consent.addEventListener("change", () => {
       if (consent.checked) clearConsentError();
+      updateSubmitState();
     });
+    updateSubmitState();
   }
 
   if (resetBtn) {
