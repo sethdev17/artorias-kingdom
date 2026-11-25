@@ -31,6 +31,72 @@
   font-size: 1rem;
 }
 
+.contact-intro p + p {
+  margin-top: 14px;
+}
+
+.contact-intro__trust {
+  font-size: 0.9rem !important;
+  color: #999 !important;
+}
+
+.contact-intro a,
+.discord-hint a {
+  color: #66d9ff;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(102, 217, 255, 0.35);
+}
+
+.contact-intro a:hover,
+.discord-hint a:hover {
+  color: var(--secondary-accent);
+  border-color: var(--secondary-accent);
+}
+
+.discord-hint {
+  font-size: 0.88rem !important;
+  margin-top: 12px !important;
+}
+
+/* LISTA „PUTEM AJUTA CU” */
+.contact-help {
+  margin-bottom: 36px;
+  padding: 18px 22px;
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(168, 176, 179, 0.14);
+  border-left: 2px solid var(--section-dark-yellow);
+  border-radius: 10px;
+}
+
+.contact-help__title {
+  color: var(--secondary-accent);
+  font-weight: 700;
+  font-size: 0.95rem;
+  margin-bottom: 10px;
+}
+
+.contact-help ul {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 8px 20px;
+}
+
+.contact-help li {
+  position: relative;
+  padding-left: 18px;
+  color: #bbb;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.contact-help li::before {
+  content: "•";
+  position: absolute;
+  left: 2px;
+  color: var(--secondary-accent);
+}
+
 /* STILUL CUTIEI FORMULARULUI */
 .contact-form-section { 
   background: rgba(0, 0, 0, 0.92); 
@@ -176,6 +242,70 @@ input:focus, textarea:focus {
 
 .form-message { margin-top: 15px; font-weight: 600; text-align: center; min-height: 24px; }
 
+/* CONSIMȚĂMÂNT */
+.consent-wrap {
+  margin-top: 30px;
+}
+
+.consent-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  cursor: pointer;
+  color: #bbb;
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.consent-label input[type="checkbox"] {
+  flex: 0 0 auto;
+  width: 18px;
+  height: 18px;
+  margin: 2px 0 0;
+  padding: 0;
+  border: 1px solid #666;
+  border-radius: 3px;
+  background: #000;
+  accent-color: #0088b3;
+  cursor: pointer;
+}
+
+.consent-label input[type="checkbox"]:focus {
+  box-shadow: none;
+}
+
+.consent-label a {
+  color: #66d9ff;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(102, 217, 255, 0.35);
+}
+
+.consent-label a:hover {
+  color: var(--secondary-accent);
+  border-color: var(--secondary-accent);
+}
+
+.consent-wrap.error .consent-label {
+  color: #ff4d4f;
+}
+
+.consent-error {
+  position: static;
+  margin-top: 8px;
+  padding-left: 30px;
+}
+
+.consent-error[hidden] {
+  display: none;
+}
+
+.contact-reply-time {
+  margin-top: 22px;
+  color: #888;
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+
 /* 4. RESPONSIVE FIXES (MOBIL) */
 @media (max-width: 767px) {
   .contact-main { 
@@ -200,6 +330,23 @@ input:focus, textarea:focus {
 
   .field-error {
     font-size: 0.75rem;
+  }
+
+  .contact-help {
+    padding: 16px;
+    margin-bottom: 28px;
+  }
+
+  .contact-help ul {
+    grid-template-columns: 1fr;
+  }
+
+  .consent-label {
+    font-size: 0.86rem;
+  }
+
+  .consent-error {
+    padding-left: 0;
   }
 
   .form-actions { 

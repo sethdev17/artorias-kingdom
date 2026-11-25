@@ -1,0 +1,328 @@
+/* ===== STILURI SPECIFICE PAGINII „TERMENI ȘI REGULI” ===== */
+
+.terms-main {
+  flex-grow: 1;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: clamp(1.5rem, 4vw, 4rem) clamp(1rem, 3vw, 2rem);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1rem, 2vw, 1.5rem);
+}
+
+/* --- Layout: cuprins lateral + conținut --- */
+.terms-layout {
+  display: grid;
+  grid-template-columns: 250px minmax(0, 1fr);
+  gap: clamp(1.5rem, 3vw, 2.5rem);
+  align-items: start;
+}
+
+.terms-sections {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.7rem, 1.5vw, 1rem);
+  min-width: 0;
+}
+
+.terms-sidebar {
+  position: sticky;
+  top: 105px;
+  min-width: 0;
+}
+
+/* --- Antet --- */
+.terms-hero {
+  text-align: center;
+  padding: 1rem 0 0.5rem;
+}
+
+.terms-hero h1 {
+  font-family: "Albert Sans", sans-serif;
+  font-size: clamp(2rem, 6vw, 3rem);
+  letter-spacing: 1px;
+  background: var(--gradient-yellow);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: neonSlide 4s linear infinite;
+}
+
+.terms-hero__sub {
+  margin-top: 0.35rem;
+  font-size: 1.05em;
+  color: var(--text);
+  font-weight: 600;
+}
+
+.terms-hero__meta {
+  display: inline-block;
+  margin-top: 0.8rem;
+  padding: 5px 14px;
+  border: 1px solid rgba(255, 215, 0, 0.35);
+  border-radius: 999px;
+  background: rgba(255, 215, 0, 0.06);
+  color: var(--secondary-accent);
+  font-size: 0.85em;
+  font-weight: 600;
+}
+
+.terms-hero__note {
+  margin: 1rem auto 0;
+  max-width: 70ch;
+  padding: 12px 16px;
+  background: rgba(255, 215, 0, 0.06);
+  border: 1px solid rgba(255, 215, 0, 0.18);
+  border-left: 3px solid var(--section-dark-yellow);
+  border-radius: 8px;
+  font-size: 0.92em;
+  line-height: 1.65;
+  color: var(--text);
+}
+
+/* --- Cărți / secțiuni --- */
+.terms-card {
+  /* Același fundal ca secțiunile de pe prima pagină, doar puțin mai discret */
+  background: rgba(10, 10, 10, 0.7);
+  border: 1px solid rgba(168, 176, 179, 0.1);
+  border-radius: 16px;
+  padding: clamp(1.15rem, 2.5vw, 1.75rem);
+  scroll-margin-top: 105px;
+}
+
+.terms-card__head {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.terms-card__num {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1px solid var(--section-dark-yellow);
+  color: var(--secondary-accent);
+  font-size: 0.85em;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.terms-card .section-title {
+  font-size: clamp(1.1rem, 2.6vw, 1.35rem);
+  text-align: left;
+}
+
+.terms-body {
+  color: var(--text);
+  line-height: 1.75;
+  font-size: 0.98em;
+}
+
+.terms-body p + p,
+.terms-body p + ul,
+.terms-body ul + p {
+  margin-top: 0.9rem;
+}
+
+.terms-body ul {
+  padding-left: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.terms-body li::marker {
+  color: var(--secondary-accent);
+}
+
+.terms-body a {
+  color: #66d9ff;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(102, 217, 255, 0.35);
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.terms-body a:hover {
+  color: var(--secondary-accent);
+  border-color: var(--secondary-accent);
+}
+
+/* --- Intro & cuprins --- */
+.terms-lead p {
+  line-height: 1.8;
+  color: var(--text);
+}
+
+/* Cuprinsul are propria cutie și se derulează separat dacă devine prea lung */
+.terms-toc {
+  background: rgba(10, 10, 10, 0.7);
+  border: 1px solid rgba(168, 176, 179, 0.12);
+  border-radius: 16px;
+  padding: 18px 16px;
+  max-height: calc(100vh - 130px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--section-dark-yellow) transparent;
+}
+
+.terms-toc::-webkit-scrollbar {
+  width: 6px;
+}
+
+.terms-toc::-webkit-scrollbar-thumb {
+  background: var(--section-dark-yellow);
+  border-radius: 6px;
+}
+
+.terms-toc h2 {
+  font-family: "Albert Sans", sans-serif;
+  font-size: 1.05em;
+  color: var(--text);
+  margin-bottom: 0.9rem;
+  letter-spacing: 0.5px;
+}
+
+.terms-toc ol {
+  list-style: none;
+  counter-reset: toc;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.terms-toc li {
+  counter-increment: toc;
+}
+
+.terms-toc a {
+  display: block;
+  color: var(--primary);
+  text-decoration: none;
+  font-size: 0.9em;
+  line-height: 1.4;
+  padding: 6px 8px;
+  border-left: 2px solid transparent;
+  border-radius: 4px;
+  transition: color 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+}
+
+.terms-toc a::before {
+  content: counter(toc, decimal-leading-zero) " — ";
+  color: var(--section-dark-yellow);
+}
+
+.terms-toc a:hover {
+  color: var(--secondary-accent);
+  background: rgba(255, 215, 0, 0.06);
+}
+
+.terms-toc a.active {
+  color: var(--secondary-accent);
+  background: rgba(255, 215, 0, 0.12);
+  border-left-color: var(--secondary-accent);
+  font-weight: 600;
+}
+
+/* --- Platforme --- */
+.platform-grid {
+  margin-top: 1.2rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
+}
+
+.platform-item {
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(168, 176, 179, 0.12);
+  border-left: 2px solid var(--section-dark-yellow);
+  border-radius: 10px;
+  padding: 1rem 1.1rem;
+}
+
+.platform-item h3 {
+  font-size: 0.98em;
+  color: var(--secondary-accent);
+  margin-bottom: 0.45rem;
+}
+
+.platform-item p {
+  font-size: 0.9em;
+  line-height: 1.65;
+  color: var(--primary);
+}
+
+.terms-staff {
+  margin-top: 1rem;
+  padding: 10px 14px;
+  border-left: 2px solid var(--section-dark-yellow);
+  background: rgba(255, 255, 255, 0.025);
+  border-radius: 6px;
+  color: var(--primary);
+  font-size: 0.88em;
+  line-height: 1.6;
+}
+
+.terms-staff strong {
+  color: var(--text);
+}
+
+/* --- Încheiere --- */
+.terms-agree {
+  text-align: center;
+  border-color: rgba(255, 215, 0, 0.28);
+}
+
+.terms-agree p {
+  line-height: 1.8;
+  max-width: 70ch;
+  margin: 0 auto;
+}
+
+.terms-agree__btn {
+  /* <a> e inline by default: fără display:inline-block margin-top-ul e ignorat
+     și butonul ajunge peste ultimul rând de text. */
+  display: inline-block;
+  margin-top: 1.4rem;
+  font-size: 1em;
+}
+
+/* --- Responsive --- */
+@media (max-width: 900px) {
+  .terms-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .terms-sidebar {
+    position: static;
+  }
+
+  .terms-toc {
+    max-height: 240px;
+  }
+}
+
+@media (max-width: 640px) {
+  .terms-card__num {
+    width: 32px;
+    height: 32px;
+    font-size: 0.78em;
+  }
+
+  .terms-body {
+    font-size: 0.92em;
+  }
+
+  .terms-hero__note {
+    font-size: 0.86em;
+    padding: 10px 12px;
+  }
+}
